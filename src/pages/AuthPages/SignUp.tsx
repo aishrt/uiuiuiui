@@ -6,8 +6,10 @@ export default function SignUp() {
   return (
     <>
       <PageMeta
-        title="React.js SignUp Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js SignUp Tables Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Sign Up"
+        description="Create your Trux360 account to start managing your fleet and logistics operations"
+        ogTitle="Sign Up for Trux360 - Fleet Management Platform"
+        ogDescription="Join Trux360 to streamline your fleet management and logistics operations"
       />
       <AuthLayout>
         <SignUpForm />

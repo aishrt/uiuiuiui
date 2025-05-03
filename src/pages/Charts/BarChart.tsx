@@ -7,8 +7,10 @@ export default function BarChart() {
   return (
     <div>
       <PageMeta
-        title="React.js Chart Dashboard | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js Chart Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Bar Charts"
+        description="Visualize your fleet and logistics data with interactive bar charts"
+        ogTitle="Bar Chart Analytics - Trux360 Fleet Management"
+        ogDescription="Analyze fleet performance and logistics metrics using interactive bar charts"
       />
       <PageBreadcrumb pageTitle="Bar Chart" />
       <div className="space-y-6">

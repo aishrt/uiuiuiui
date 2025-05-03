@@ -9,8 +9,11 @@ export default function Images() {
   return (
     <>
       <PageMeta
-        title="React.js Images Dashboard | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js Images page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Images"
+        description="Manage and optimize images in Trux360's interface"
+        ogTitle="Image Components - Trux360"
+        ogDescription="Image components for displaying and organizing visual content"
+        keywords="image management, visual content, image optimization, Trux360 images"
       />
       <PageBreadcrumb pageTitle="Images" />
       <div className="space-y-5 sm:space-y-6">

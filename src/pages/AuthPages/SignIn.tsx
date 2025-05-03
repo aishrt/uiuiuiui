@@ -6,8 +6,10 @@ export default function SignIn() {
   return (
     <>
       <PageMeta
-        title="React.js SignIn Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js SignIn Tables Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Sign In"
+        description="Sign in to your Trux360 account to access fleet management and logistics tools"
+        ogTitle="Sign In to Trux360 - Fleet Management Platform"
+        ogDescription="Access your fleet management dashboard and logistics tools"
       />
       <AuthLayout>
         <SignInForm />

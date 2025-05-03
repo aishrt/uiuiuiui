@@ -10,8 +10,11 @@ export default function Home() {
   return (
     <>
       <PageMeta
-        title="React.js Ecommerce Dashboard | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js Ecommerce Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Dashboard"
+        description="Trux360 Dashboard - Monitor your fleet, track vehicles, and analyze logistics data in real-time"
+        ogTitle="Trux360 Dashboard - Fleet Management Platform"
+        ogDescription="Real-time fleet monitoring and logistics analytics platform"
+        keywords="fleet dashboard, vehicle tracking, logistics analytics, fleet management, real-time monitoring"
       />
       <div className="grid grid-cols-12 gap-4 md:gap-6">
         <div className="col-span-12 space-y-6 xl:col-span-7">

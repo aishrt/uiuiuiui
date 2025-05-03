@@ -118,8 +118,10 @@ const Calendar: React.FC = () => {
   return (
     <>
       <PageMeta
-        title="React.js Calendar Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js Calendar Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Calendar"
+        description="Manage your fleet schedules, maintenance, and logistics with Trux360's calendar"
+        ogTitle="Fleet Management Calendar - Trux360"
+        ogDescription="Schedule and manage your fleet operations with Trux360's calendar"
       />
       <div className="rounded-2xl border  border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
         <div className="custom-calendar">

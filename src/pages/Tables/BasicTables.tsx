@@ -7,8 +7,11 @@ export default function BasicTables() {
   return (
     <>
       <PageMeta
-        title="React.js Basic Tables Dashboard | TailAdmin - Next.js Admin Dashboard Template"
-        description="This is React.js Basic Tables Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Basic Tables"
+        description="View and manage fleet data using Trux360's table components"
+        ogTitle="Data Tables - Trux360"
+        ogDescription="Data table components for managing fleet and logistics information"
+        keywords="data tables, fleet management, logistics data, Trux360 tables"
       />
       <PageBreadcrumb pageTitle="Basic Tables" />
       <div className="space-y-6">

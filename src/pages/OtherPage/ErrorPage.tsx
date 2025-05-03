@@ -1,15 +1,36 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import GridShape from "../../components/common/GridShape";
-import { Link } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
+import { ScrollToTop } from "../../components/common/ScrollToTop";
 
-const NotFound = () => {
+const ErrorPage = () => {
+  const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(5);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown((prev) => prev - 1);
+    }, 1000);
+
+    const redirectTimer = setTimeout(() => {
+      navigate('/');
+    }, 5000);
+
+    return () => {
+      clearTimeout(redirectTimer);
+      clearInterval(timer);
+    };
+  }, [navigate]);
+
   return (
     <>
+      <ScrollToTop />
       <PageMeta
-        title="Page Not Found"
-        description="The requested page could not be found on Trux360's fleet management platform"
-        ogTitle="404 - Page Not Found | Trux360"
-        ogDescription="The requested page could not be found on Trux360"
+        title="Error"
+        description="An error occurred while accessing Trux360's fleet management platform"
+        ogTitle="Error | Trux360"
+        ogDescription="An error occurred while accessing Trux360"
       />
       <div className="relative flex flex-col items-center justify-center min-h-screen p-6 overflow-hidden z-1">
         <GridShape />
@@ -18,23 +39,23 @@ const NotFound = () => {
             ERROR
           </h1>
 
-          <img src="/images/error/404.svg" alt="404" className="dark:hidden" />
+          <img src="/images/error/error.svg" alt="error" className="dark:hidden" />
           <img
-            src="/images/error/404-dark.svg"
-            alt="404"
+            src="/images/error/error-dark.svg"
+            alt="error"
             className="hidden dark:block"
           />
 
           <p className="mt-10 mb-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-            We can't seem to find the page you are looking for!
+            Something went wrong! Redirecting to home page in {countdown} seconds...
           </p>
 
-          <Link
-            to="/"
+          <button
+            onClick={() => navigate('/')}
             className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
           >
             Back to Home Page
-          </Link>
+          </button>
         </div>
         {/* <!-- Footer --> */}
         <p className="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">
@@ -45,4 +66,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound;
+export default ErrorPage;

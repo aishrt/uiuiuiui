@@ -8,8 +8,11 @@ export default function Badges() {
   return (
     <div>
       <PageMeta
-        title="React.js Badges Dashboard | TailAdmin - React.js Admin Dashboard Template"
-        description="This is React.js Badges Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
+        title="Badges"
+        description="Configure and manage status badges in Trux360's interface"
+        ogTitle="Badge Components - Trux360" 
+        ogDescription="Badge components for displaying status indicators and notifications"
+        keywords="status badges, notification badges, indicators, Trux360 badges"
       />
       <PageBreadcrumb pageTitle="Badges" />
       <div className="space-y-5 sm:space-y-6">
