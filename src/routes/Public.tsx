@@ -6,6 +6,7 @@ import SignIn from '../pages/AuthPages/SignIn';
 import SignUp from '../pages/AuthPages/SignUp';
 import ErrorPage from '../pages/OtherPage/ErrorPage';
 import { ScrollToTop } from '../components/common/ScrollToTop';
+import Landing from '../pages/Dashboard/Landing';
 
 const App = () => {
   return (
@@ -23,8 +24,8 @@ export const publicRoutes = [
     path: '/',
     element: <App />,
     children: [
-      { path: '/', element: <Home /> },
-      { path: '/home', element: <Home /> },
+      { path: '/', element: <Landing /> },
+      { path: '/home', element: <Landing /> },
       { path: '/signin', element: <SignIn /> },
       { path: '/signup', element: <SignUp /> },
       { path: '/error', element: <ErrorPage /> },
