@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Typewriter from 'typewriter-effect';
+import Typewriter from "typewriter-effect";
 import {
   FaPhone,
   FaChevronRight,
@@ -41,7 +41,7 @@ const Landing: React.FC = () => {
   const [stats, setStats] = useState({
     transits: 0,
     operations: 0,
-    delivery: 0
+    delivery: 0,
   });
 
   useEffect(() => {
@@ -80,7 +80,7 @@ const Landing: React.FC = () => {
         setStats({
           transits: Math.min(500, Math.floor((500 * currentStep) / steps)),
           operations: 24,
-          delivery: Math.min(99.9, Math.floor((99.9 * currentStep) / steps))
+          delivery: Math.min(99.9, Math.floor((99.9 * currentStep) / steps)),
         });
 
         if (currentStep >= steps) {
@@ -170,14 +170,16 @@ const Landing: React.FC = () => {
         <div className="container">
           <h1>
             <Link to="/" className="logo">
-              TRUX360
+              {/* TRUX360 */}
+              <img src="../../public/images/loogo.png" alt="Logo" width={140} height={30} />
             </Link>
           </h1>
 
           <nav className={`navbar ${isMenuOpen ? "active" : ""}`} data-navbar>
             <div className="navbar-top">
               <Link to="/" className="logo">
-                TRUX360
+                {/* TRUX360 */}
+                <img src="../../public/images/loogo.png" alt="Logo" width={140} height={30} />
               </Link>
               <button
                 className="nav-close-btn"
@@ -244,9 +246,9 @@ const Landing: React.FC = () => {
 
           <div className="header-contact">
             <div>
-              <a href="tel:12345678910" className="contact-number">
-                Register
-              </a>
+              <Link to="/signin" className="contact-number">
+                Login
+              </Link>
             </div>
 
             {/* <div>
@@ -284,28 +286,32 @@ const Landing: React.FC = () => {
                   <div className="typewriter-container">
                     {!showTypewriter ? (
                       <div className="typewriter-wrapper">
-                        Innovative <span style={{ color: 'var(--dark-orange)' }}>Logistics</span> Solutions
+                        Innovative{" "}
+                        <span style={{ color: "var(--dark-orange)" }}>
+                          Logistics
+                        </span>{" "}
+                        Solutions
                       </div>
                     ) : (
                       <Typewriter
                         options={{
                           strings: [
                             'Efficient <span style="color: var(--dark-orange)">Oil</span> Tanker Transit',
-                            'Seamless <span style="color: var(--dark-orange)">Port</span> to Depot Logistics', 
-                            'Reliable <span style="color: var(--dark-orange)">Petroleum</span> Transportation'
+                            'Seamless <span style="color: var(--dark-orange)">Port</span> to Depot Logistics',
+                            'Reliable <span style="color: var(--dark-orange)">Petroleum</span> Transportation',
                           ],
                           autoStart: true,
                           loop: true,
                           delay: 75,
                           deleteSpeed: 10,
-                          cursor: '',
-                          wrapperClassName: 'typewriter-wrapper',
+                          cursor: "",
+                          wrapperClassName: "typewriter-wrapper",
                         }}
                       />
                     )}
                   </div>
                 </h1>
-       
+
                 <div className="hero-stats animate-fade-in-delayed">
                   <div className="stat-item">
                     <span className="stat-number">{stats.transits}+</span>
@@ -328,7 +334,6 @@ const Landing: React.FC = () => {
                   loading="lazy"
                 />
               </div>
-              
             </div>
           </section>
 
@@ -442,8 +447,8 @@ const Landing: React.FC = () => {
                 TRUX360
               </Link>
               <p className="footer-text">
-                Many desktop publishing packages and web page editors now use
-                are dolra Ipsum as their default.
+                Streamline your fleet management and logistics operations with
+                Trux360
               </p>
               <ul className="social-list">
                 <li>
@@ -470,7 +475,7 @@ const Landing: React.FC = () => {
             </div>
 
             <ul className="footer-list">
-              <li>
+              {/* <li>
                 <p className="footer-list-title">Quick Links</p>
               </li>
               <li>
@@ -487,11 +492,11 @@ const Landing: React.FC = () => {
               </li>
               <li>
                 <Link to="#">Contact Us</Link>
-              </li>
+              </li> */}
             </ul>
 
             <ul className="footer-list">
-              <li>
+              {/* <li>
                 <p className="footer-list-title">Services</p>
               </li>
               <li>
@@ -508,7 +513,7 @@ const Landing: React.FC = () => {
               </li>
               <li>
                 <Link to="#">Packaging</Link>
-              </li>
+              </li> */}
             </ul>
 
             <ul className="footer-list">
@@ -537,7 +542,7 @@ const Landing: React.FC = () => {
             <p className="copyright">
               &copy; 2025 TRUX360. All Rights Reserved by{" "}
               <Link to="#" className="copyright-link">
-                Neeraj
+                Kalkogic
               </Link>
             </p>
           </div>

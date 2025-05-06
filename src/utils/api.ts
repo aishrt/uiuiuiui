@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { env } from './env';
 
 // Create axios instance with default config
@@ -12,13 +12,13 @@ export const api = axios.create({
 
 // Request interceptor
 api.interceptors.request.use(
-  (config) => {
+  (config: InternalAxiosRequestConfig) => {
     if (env.enableLogging) {
       console.log(`Making request to ${config.url}`);
     }
     return config;
   },
-  (error) => {
+  (error: AxiosError) => {
     if (env.enableLogging) {
       console.error('Request error:', error);
     }
@@ -28,13 +28,13 @@ api.interceptors.request.use(
 
 // Response interceptor
 api.interceptors.response.use(
-  (response) => {
+  (response: AxiosResponse) => {
     if (env.enableLogging) {
       console.log(`Response from ${response.config.url}:`, response.status);
     }
     return response;
   },
-  (error) => {
+  (error: AxiosError) => {
     if (env.enableLogging) {
       console.error('Response error:', error);
     }

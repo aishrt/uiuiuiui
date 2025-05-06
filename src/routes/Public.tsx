@@ -7,7 +7,7 @@ import SignUp from '../pages/AuthPages/SignUp';
 import ErrorPage from '../pages/OtherPage/ErrorPage';
 import { ScrollToTop } from '../components/common/ScrollToTop';
 import Landing from '../pages/Dashboard/Landing';
-
+import ForgotPassword from '../pages/AuthPages/ForgotPassword';
 const App = () => {
   return (
     <div>
@@ -28,6 +28,7 @@ export const publicRoutes = [
       { path: '/home', element: <Landing /> },
       { path: '/signin', element: <SignIn /> },
       { path: '/signup', element: <SignUp /> },
+      { path: '/forgot-password', element: <ForgotPassword /> },
       { path: '/error', element: <ErrorPage /> },
       { path: '/not-found', element: <NotFound /> },
       { path: '*', element: <Navigate to="/not-found" /> },
