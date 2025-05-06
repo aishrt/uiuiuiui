@@ -12,9 +12,6 @@ import Switch from "../../components/form/switch/Switch";
 import { EyeCloseIcon, EyeIcon, TimeIcon, EnvelopeIcon } from "../../icons";
 import DatePicker from "../../components/form/date-picker.tsx";
 import PhoneInput from "../../components/form/group-input/PhoneInput";
-import CountrySelect from "../../components/form/input/CountrySelect";
-import StateSelect from "../../components/form/input/StateSelect";
-import CitySelect from "../../components/form/input/CitySelect";
 
 interface FormErrors {
   role?: string;
@@ -23,9 +20,6 @@ interface FormErrors {
   phoneNumber?: string;
   status?: string;
   company?: string;
-  country?: string;
-  state?: string;
-  city?: string;
 }
 
 export default function AddUsers() {
@@ -33,8 +27,8 @@ export default function AddUsers() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [country, setCountry] = useState("");
-  const [state, setState] = useState("");
   const [city, setCity] = useState("");
+  const [state, setState] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
@@ -43,7 +37,7 @@ export default function AddUsers() {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("active");
   const [errors, setErrors] = useState<FormErrors>({});
-  console.log({state,country});
+
   // Options for role and status
   const roleOptions = [
     { value: "manager", label: "Manager" },
@@ -64,45 +58,33 @@ export default function AddUsers() {
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-
+    
     if (!role) {
       newErrors.role = "Role is required";
     }
-
+    
     if (!email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = "Email is invalid";
     }
-
+    
     if (!firstName) {
       newErrors.firstName = "First name is required";
     }
-
+    
     if (!phoneNumber) {
       newErrors.phoneNumber = "Phone number is required";
     } else if (!/^\+?[\d\s-]{10,}$/.test(phoneNumber)) {
       newErrors.phoneNumber = "Phone number is invalid";
     }
-
+    
     if (!status) {
       newErrors.status = "Status is required";
     }
-
+    
     if (role === "company" && !company) {
       newErrors.company = "Company is required";
-    }
-
-    if (!country) {
-      newErrors.country = "Country is required";
-    }
-
-    if (!state) {
-      newErrors.state = "State is required";
-    }
-
-    if (!city) {
-      newErrors.city = "City is required";
     }
 
     setErrors(newErrors);
@@ -116,8 +98,8 @@ export default function AddUsers() {
         first_name: firstName,
         last_name: lastName,
         country,
-        state,
         city,
+        state,
         postal_code: postalCode,
         phone_number: phoneNumber,
         email,
@@ -149,9 +131,7 @@ export default function AddUsers() {
                 onChange={(value) => setRole(value)}
                 className="dark:bg-dark-900"
               />
-              {errors.role && (
-                <p className="mt-1 text-sm text-red-500">{errors.role}</p>
-              )}
+              {errors.role && <p className="mt-1 text-sm text-red-500">{errors.role}</p>}
             </div>
             <div>
               <Label htmlFor="firstName">First Name *</Label>
@@ -161,9 +141,7 @@ export default function AddUsers() {
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
               />
-              {errors.firstName && (
-                <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
-              )}
+              {errors.firstName && <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>}
             </div>
 
             <div>
@@ -174,41 +152,28 @@ export default function AddUsers() {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
               />
-              {errors.phoneNumber && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.phoneNumber}
-                </p>
-              )}
+              {errors.phoneNumber && <p className="mt-1 text-sm text-red-500">{errors.phoneNumber}</p>}
             </div>
 
             <div>
-              <CountrySelect
+              <Label htmlFor="country">Country</Label>
+              <Input
+                type="text"
+                id="country"
                 value={country}
-                onChange={(value) => {
-                  setCountry(value);
-                  setState(''); // Reset state when country changes
-                  setCity(''); // Reset city when country changes
-                }}
-                required
-                error={errors.country}
+                onChange={(e) => setCountry(e.target.value)}
               />
             </div>
 
-           
-
-            {state && (
-              <div>
-                <CitySelect
-                  value={city}
-                  onChange={setCity}
-                  country={country}
-                  state={state}
-                  required
-                  error={errors.city}
-                />
-              </div>
-            )}
-
+            <div>
+              <Label htmlFor="city">City</Label>
+              <Input
+                type="text"
+                id="city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+              />
+            </div>
             <div>
               <Label htmlFor="password">Password</Label>
               <Input
@@ -228,9 +193,7 @@ export default function AddUsers() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-              )}
+              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
             </div>
             <div>
               <Label htmlFor="lastName">Last Name</Label>
@@ -249,24 +212,17 @@ export default function AddUsers() {
                 onChange={(value) => setStatus(value)}
                 className="dark:bg-dark-900"
               />
-              {errors.status && (
-                <p className="mt-1 text-sm text-red-500">{errors.status}</p>
-              )}
+              {errors.status && <p className="mt-1 text-sm text-red-500">{errors.status}</p>}
             </div>
-            {country && (
-              <div>
-                <StateSelect
-                  value={state}
-                  onChange={(value) => {
-                    setState(value);
-                    setCity(''); // Reset city when state changes
-                  }}
-                  country={country}
-                  required
-                  error={errors.state}
-                />
-              </div>
-            )}
+            <div>
+              <Label htmlFor="state">State</Label>
+              <Input
+                type="text"
+                id="state"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+              />
+            </div>
             <div>
               <Label htmlFor="postalCode">Postal Code</Label>
               <Input
@@ -285,9 +241,7 @@ export default function AddUsers() {
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                 />
-                {errors.company && (
-                  <p className="mt-1 text-sm text-red-500">{errors.company}</p>
-                )}
+                {errors.company && <p className="mt-1 text-sm text-red-500">{errors.company}</p>}
               </div>
             )}
           </div>
