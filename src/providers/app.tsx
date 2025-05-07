@@ -68,6 +68,7 @@ export const AppProvider = ({ children }: AppProviderProps) => {
                 draggable
                 pauseOnHover
                 theme="colored"
+                style={{ zIndex: 99999 }}
               />
               <Router>{children}</Router>
             </AnimatePresence>

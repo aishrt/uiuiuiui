@@ -11,7 +11,7 @@ import Radio from "../../components/form/input/Radio";
 import Switch from "../../components/form/switch/Switch";
 import { EyeCloseIcon, EyeIcon, TimeIcon, EnvelopeIcon } from "../../icons";
 import DatePicker from "../../components/form/date-picker.tsx";
-import PhoneInput from "../../components/form/group-input/PhoneInput";
+import PhoneInput from "../../components/form/input/PhoneInput";
 import CountrySelect from "../../components/form/input/CountrySelect";
 import StateSelect from "../../components/form/input/StateSelect";
 import CitySelect from "../../components/form/input/CitySelect";
@@ -36,7 +36,7 @@ export default function AddUsers() {
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [postalCode, setPostalCode] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState<string | undefined>("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [company, setCompany] = useState("");
@@ -167,18 +167,14 @@ export default function AddUsers() {
             </div>
 
             <div>
-              <Label htmlFor="phoneNumber">Phone Number *</Label>
-              <Input
-                type="text"
-                id="phoneNumber"
+              <PhoneInput
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(value) => setPhoneNumber(value)}
+                required
+                error={!!errors.phoneNumber}
+                hint={errors.phoneNumber}
+                placeholder="Enter phone number"
               />
-              {errors.phoneNumber && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.phoneNumber}
-                </p>
-              )}
             </div>
 
             <div>

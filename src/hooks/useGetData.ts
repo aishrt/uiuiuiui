@@ -1,36 +1,38 @@
-import { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-toastify';
-import { api } from '../utils/api';
+import { useState } from 'react';
+import storage from '../utils/storage';
 
-interface ApiResponse<T> {
-  data: T | null;
-  error: string | null;
-  loading: boolean;
-  refetch: () => Promise<void>;
-}
+const useGetData = <T,>() => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-export const useGetData = <T>(endpoint: string): ApiResponse<T> => {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchData = useCallback(async () => {
+  const getData = async (url: string): Promise<T | null> => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await api.get<T>(endpoint);
-      setData(response.data);
-      setError(null);
-      toast.success('Data fetched successfully!');
+      const token = storage.getToken();
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      return data;
     } catch (err) {
-      setError('Failed to fetch data');
-      toast.error('Failed to fetch data');
+      setError(err instanceof Error ? err : new Error('An error occurred'));
+      return null;
     } finally {
       setLoading(false);
     }
-  }, [endpoint]);
+  };
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  return { data, loading, error, refetch: fetchData };
+  return { getData, loading, error };
 };
+
+export default useGetData;

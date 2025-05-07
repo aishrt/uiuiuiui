@@ -3,6 +3,7 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
 import storage from "../../utils/storage";
+import { useAuthStore } from "../../store/authStore";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,6 +21,9 @@ export default function UserDropdown() {
     window.location.href = "/signin";
   }
 
+
+  const { user } = useAuthStore();
+  console.log("user-----------", user);
   return (
     <div className="relative">
       <button

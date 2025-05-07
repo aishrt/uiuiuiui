@@ -20,6 +20,10 @@ import Alerts from "../pages/UiElements/Alerts";
 import BasicTables from "../pages/Tables/BasicTables";
 import UserList from "../pages/AdminPages/UserList";
 import AddUsers from "../pages/AdminPages/AddUsers";
+import CompaniesList from "../pages/AdminPages/Companies";
+import DealsList from "../pages/AdminPages/DealsList";
+import TrucksList from "../pages/AdminPages/TrucksList";
+import TransactionsList from "../pages/AdminPages/TransactionsList";
 // import { useAuthStore } from "../store/authStore";
 
 const ProtectedLayout = () => {
@@ -53,7 +57,12 @@ export const protectedRoutes = [
       { path: "/", element: <Home /> },
       { path: "/profile", element: <UserProfiles /> },
       { path: "/user-list", element: <UserList /> },
+      { path: "/companies-list", element: <CompaniesList /> },
+      { path: "/deals-list", element: <DealsList /> },
+      { path: "/trucks-list", element: <TrucksList /> },
+      { path: "/transactions-list", element: <TransactionsList /> },
       { path: "/add-user", element: <AddUsers /> },
+      // =======================================
       { path: "/calendar", element: <Calendar /> },
       { path: "/blank", element: <Blank /> },
       { path: "/form-elements", element: <FormElements /> },

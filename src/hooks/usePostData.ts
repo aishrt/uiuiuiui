@@ -37,9 +37,10 @@ const usePostData = <T, R>(endpoint: string, options?: FetchOptions) => {
         }
         return response.data;
       } catch (err: any) {
+        console.log("err-----------", err);
         setError(err.response?.data?.message || err.message);
         if (env.enableLogging) {
-          toast.error('Failed to post data');
+          toast.error(err.response?.data?.message || 'Failed to post data');
         }
       } finally {
         setLoading(false);
