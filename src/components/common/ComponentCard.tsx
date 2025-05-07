@@ -1,3 +1,5 @@
+import { useAuthStore } from "../../store/authStore";
+
 interface ComponentCardProps {
   title: string;
   children: React.ReactNode;
@@ -36,13 +38,12 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
     { value: "oldest", label: "Oldest First" },
   ];
 
+  const roles = useAuthStore((state:any) => state.roles);
   const roleOptions = [
     { value: "all", label: "All Roles" },
-    { value: "admin", label: "Admin" },
-    { value: "user", label: "User" },
-    { value: "editor", label: "Editor" },
+    ...roles.map((role: any) => ({ value: role.id, label: (role.rolename).toUpperCase() })),
   ];
-
+console.log("roleOptions",roleOptions)
   return (
     <div
       className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] ${className}`}
@@ -155,3 +156,4 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
 };
 
 export default ComponentCard;
+

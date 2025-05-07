@@ -21,7 +21,7 @@ import {
   BoltIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
-import useGetData from "../hooks/useGetData";
+
 
 type NavItem = {
   name: string;
@@ -30,40 +30,6 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-
-
-interface Role {
-  id: string;
-  name: string;
-  permissions: string[];
-}
-
-interface RoleResponse {
-  results: Role[];
-}
-
-const useRoles = () => {
-  const { getData, loading, error } = useGetData<RoleResponse>();
-  const [roles, setRoles] = useState<Role[]>([]);
-
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const data = await getData('/v1/admin/list-role');
-        if (data?.results) {
-          setRoles(data.results);
-        }
-      } catch (err) {
-        console.error('Error fetching roles:', err);
-      }
-    };
-
-    fetchRoles();
-  }, [getData]);
-
-  return { roles, loading, error };
-};
-console.log("rolesuseRoles", useRoles);
 
 const navItems: NavItem[] = [
   {

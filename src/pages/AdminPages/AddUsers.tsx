@@ -15,6 +15,7 @@ import PhoneInput from "../../components/form/input/PhoneInput";
 import CountrySelect from "../../components/form/input/CountrySelect";
 import StateSelect from "../../components/form/input/StateSelect";
 import CitySelect from "../../components/form/input/CitySelect";
+import { useAuthStore } from "../../store/authStore.ts";
 
 interface FormErrors {
   role?: string;
@@ -43,17 +44,15 @@ export default function AddUsers() {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("active");
   const [errors, setErrors] = useState<FormErrors>({});
-  console.log({state,country});
+  console.log({ state, country });
   // Options for role and status
+
+  const roles = useAuthStore((state: any) => state.roles);
   const roleOptions = [
-    { value: "manager", label: "Manager" },
-    { value: "company", label: "Company" },
-    { value: "subadmin", label: "Sub Admin" },
-    { value: "bookie", label: "Bookie" },
-    { value: "trackie", label: "Trackie" },
-    { value: "runner", label: "Runner" },
-    { value: "transporter", label: "Transporter" },
-    { value: "clearing_agent", label: "Clearing Agent" },
+    ...roles.map((role: any) => ({
+      value: role.id,
+      label: role.rolename.toUpperCase(),
+    })),
   ];
 
   const statusOptions = [
@@ -182,15 +181,13 @@ export default function AddUsers() {
                 value={country}
                 onChange={(value) => {
                   setCountry(value);
-                  setState(''); // Reset state when country changes
-                  setCity(''); // Reset city when country changes
+                  setState(""); // Reset state when country changes
+                  setCity(""); // Reset city when country changes
                 }}
                 required
                 error={errors.country}
               />
             </div>
-
-           
 
             {state && (
               <div>
@@ -255,7 +252,7 @@ export default function AddUsers() {
                   value={state}
                   onChange={(value) => {
                     setState(value);
-                    setCity(''); // Reset city when state changes
+                    setCity(""); // Reset city when state changes
                   }}
                   country={country}
                   required

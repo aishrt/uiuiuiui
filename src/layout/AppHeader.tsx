@@ -5,8 +5,34 @@ import { useSidebar } from "../context/SidebarContext";
 // import { ThemeToggleButton } from "../components/common/ThemeToggleButton";
 import NotificationDropdown from "../components/header/NotificationDropdown";
 import UserDropdown from "../components/header/UserDropdown";
+import useGetData from "../hooks/useGetData";
+import { useAuthStore } from "../store/authStore";
 
 const AppHeader: React.FC = () => {
+
+  const { getData, loading, error } = useGetData();
+  const roles = useAuthStore((state) => state.roles);
+  const updateRoles = useAuthStore((state) => state.updateRoles);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        if (roles.length === 0) {
+          const data: any = await getData("/v1/admin/list-role");
+          if (data) {
+            updateRoles(data?.data);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching roles:", err);
+      }
+    };
+
+    if (roles?.length === 0) {
+      fetchRoles();
+    }
+  }, [getData, roles, updateRoles]);
+console.log("roleeeeeee",roles)
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
