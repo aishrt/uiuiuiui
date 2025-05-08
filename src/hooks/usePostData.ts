@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { api } from '../utils/api';
 import { env } from '../utils/env';
+import storage from '../utils/storage';
 
 interface FetchOptions {
   verifyAuth?: boolean;
@@ -24,7 +25,7 @@ const usePostData = <T, R>(endpoint: string, options?: FetchOptions) => {
         if (options?.verifyAuth) {
           headers = {
             ...headers,
-            Authorization: `Bearer your_token_here`,
+            Authorization: `Bearer ${storage.getToken()}`,
           };
         }
 
@@ -33,7 +34,7 @@ const usePostData = <T, R>(endpoint: string, options?: FetchOptions) => {
         setError(null);
 
         if (env.enableLogging) {
-          toast.success('Data posted successfully!');
+          toast.success(response?.data?.message || 'Data posted successfully!');
         }
         return response.data;
       } catch (err: any) {

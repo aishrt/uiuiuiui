@@ -43,7 +43,7 @@ const ComponentCard: React.FC<ComponentCardProps> = ({
     { value: "all", label: "All Roles" },
     ...roles.map((role: any) => ({ value: role.id, label: (role.rolename).toUpperCase() })),
   ];
-console.log("roleOptions",roleOptions)
+
   return (
     <div
       className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] ${className}`}

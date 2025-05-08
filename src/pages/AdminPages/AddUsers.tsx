@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import PageMeta from "../../components/common/PageMeta";
 import Label from "../../components/form/Label";
@@ -16,6 +17,8 @@ import CountrySelect from "../../components/form/input/CountrySelect";
 import StateSelect from "../../components/form/input/StateSelect";
 import CitySelect from "../../components/form/input/CitySelect";
 import { useAuthStore } from "../../store/authStore.ts";
+import usePostData from "../../hooks/usePostData.ts";
+import storage from "../../utils/storage";
 
 interface FormErrors {
   role?: string;
@@ -30,6 +33,8 @@ interface FormErrors {
 }
 
 export default function AddUsers() {
+  const navigate = useNavigate();
+  const { login } = useAuthStore();
   // State for form fields
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -108,10 +113,12 @@ export default function AddUsers() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      console.log({
+    if (!validateForm()) return;
+
+    try {
+      const formData = {
         first_name: firstName,
         last_name: lastName,
         country,
@@ -124,9 +131,24 @@ export default function AddUsers() {
         company,
         password,
         status,
-      });
+      };
+
+      const response = await postData(formData);
+      
+      if (response?.data) {
+        // Handle successful user creation
+        navigate("/user-list"); // Redirect to users list or appropriate page
+      }
+    } catch (err) {
+      console.error("Failed to create user:", err);
+      // Handle error appropriately
     }
   };
+
+  const { postData, loading } = usePostData<any, any>(
+    "/v1/admin/create-entity",
+    { verifyAuth: true }
+  );
 
   return (
     <div>
