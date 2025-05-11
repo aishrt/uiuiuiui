@@ -57,6 +57,7 @@ export const protectedRoutes = [
       { path: "/", element: <Home /> },
       { path: "/profile", element: <UserProfiles /> },
       { path: "/user-list", element: <UserList /> },
+      { path: "/admin-list", element: <UserList /> },
       { path: "/companies-list", element: <CompaniesList /> },
       { path: "/deals-list", element: <DealsList /> },
       { path: "/trucks-list", element: <TrucksList /> },

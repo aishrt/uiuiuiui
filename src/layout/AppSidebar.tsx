@@ -22,14 +22,12 @@ import {
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
 
-
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
-
 
 const navItems: NavItem[] = [
   {
@@ -44,9 +42,15 @@ const navItems: NavItem[] = [
   //   name: "Calendar",
   //   path: "/calendar",
   // },
+
   {
     icon: <GroupIcon />,
-    name: "User List", 
+    name: "Admin List",
+    path: "/admin-list",
+  },
+  {
+    icon: <GroupIcon />,
+    name: "User List",
     path: "/user-list",
   },
   {
@@ -58,13 +62,15 @@ const navItems: NavItem[] = [
     icon: <FileIcon />,
     name: "Deals",
     path: "/deals-list",
-  },{
+  },
+  {
     icon: <BoltIcon />,
     name: "Trucks",
     path: "/trucks-list",
-  },{
+  },
+  {
     icon: <DollarLineIcon />,
-    name: "Transactions", 
+    name: "Transactions",
     path: "/transactions-list",
   },
   // {
@@ -368,9 +374,7 @@ const AppSidebar: React.FC = () => {
                     : "justify-start"
                 }`}
               >
-                {isExpanded || isHovered || isMobileOpen ? (
-                  null
-                ) : (
+                {isExpanded || isHovered || isMobileOpen ? null : (
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>

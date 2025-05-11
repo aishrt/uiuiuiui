@@ -5,7 +5,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import BasicTableOne, {
   Column,
 } from "../../components/tables/BasicTables/BasicTableOne";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useGetData from "../../hooks/useGetData";
 import useDeleteData from "../../hooks/useDeleteData";
 import { toast } from "react-toastify";
@@ -49,6 +49,8 @@ interface UserResponse {
 
 export default function UserList() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isAdminList = location.pathname === "/admin-list";
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
@@ -95,7 +97,7 @@ export default function UserList() {
   const columns: Column[] = [
     {
       key: "name",
-      header: "User",
+      header: isAdminList ? "Admin" : "User",
       render: (_, row) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 overflow-hidden rounded-full">
@@ -112,7 +114,7 @@ export default function UserList() {
               {`${row.first_name || ""} ${row.last_name || ""}`.trim() || "N/A"}
             </span>
             <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-              {typeof row.role === 'object' ? row.role.rolename : row.role}
+              {row.role.rolename}
             </span>
           </div>
         </div>
@@ -127,11 +129,11 @@ export default function UserList() {
       key: "role",
       header: "Role",
       render: (value) => {
-        if (typeof value === 'object' && value !== null) {
+        if (typeof value === "object" && value !== null) {
           return value.rolename || "N/A";
         }
         return value || "N/A";
-      }
+      },
     },
     {
       key: "status",
@@ -198,7 +200,10 @@ export default function UserList() {
     try {
       setDeleteLoading(true);
       // Find the selected role object to get its ID
-      const selectedRole = roles.find((r: Role) => r.id === (typeof user.role === 'string' ? user.role : user.role.id));
+      const selectedRole = roles.find(
+        (r: Role) =>
+          r.id === (typeof user.role === "string" ? user.role : user.role.id)
+      );
       if (!selectedRole) {
         toast.error("Invalid role selected");
         return;
@@ -209,8 +214,8 @@ export default function UserList() {
           Authorization: `Bearer ${storage.getToken()}`,
         },
         data: {
-          role: selectedRole.id
-        }
+          role: selectedRole.id,
+        },
       });
 
       if (response?.data) {
@@ -237,17 +242,18 @@ export default function UserList() {
   return (
     <>
       <PageMeta
-        title="User List"
+        title={isAdminList ? "Admin List" : "User List"}
         description="View and manage fleet data using Trux360's table components"
         ogTitle="User List - Trux360"
         ogDescription="Data table components for managing fleet and logistics information"
         keywords="data tables, fleet management, logistics data, Trux360 tables"
       />
-      <PageBreadcrumb pageTitle="User" />
+      <PageBreadcrumb pageTitle={isAdminList ? "Admin List" : "User List"} />
       <div className="space-y-6">
         <ComponentCard
-          title="User List"
+          title={isAdminList ? "Admin List" : "User List"}
           showFilters={true}
+          showRoleFilter={!isAdminList}
           onSearch={handleSearch}
           onSortChange={handleSortChange}
           onRoleFilterChange={handleRoleFilterChange}
