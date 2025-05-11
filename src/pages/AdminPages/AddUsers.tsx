@@ -26,7 +26,9 @@ interface FormErrors {
   firstName?: string;
   phoneNumber?: string;
   status?: string;
-  company?: string;
+  org_name?: string;
+  registration_number?: string;
+  address?: string;
   country?: string;
   state?: string;
   city?: string;
@@ -45,19 +47,25 @@ export default function AddUsers() {
   const [phoneNumber, setPhoneNumber] = useState<string | undefined>("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [company, setCompany] = useState("");
+  const [roleLevel, setRoleLevel] = useState<number | null>(null);
+  const [org_name, setOrgName] = useState("");
+  const [registration_number, setRegistrationNumber] = useState("");
+  const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState("active");
   const [errors, setErrors] = useState<FormErrors>({});
-  console.log({ state, country });
+  console.log({ state, country, role });
   // Options for role and status
 
   const roles = useAuthStore((state: any) => state.roles);
   const roleOptions = [
-    ...roles.map((role: any) => ({
-      value: role.id,
-      label: role.rolename.toUpperCase(),
-    })),
+    ...roles
+      .filter((role: any) => role.rolelevel === 100)
+      .map((role: any) => ({
+        value: role.id,
+        label: role.rolename.toUpperCase(),
+        rolelevel: role.rolelevel,
+      })),
   ];
 
   const statusOptions = [
@@ -93,8 +101,16 @@ export default function AddUsers() {
       newErrors.status = "Status is required";
     }
 
-    if (role === "company" && !company) {
-      newErrors.company = "Company is required";
+    if (roleLevel === 100 && !org_name) {
+      newErrors.org_name = "Organisation name is required";
+    }
+
+    if (roleLevel === 100 && !registration_number) {
+      newErrors.registration_number = "Registration number is required";
+    }
+
+    if (roleLevel === 100 && !address) {
+      newErrors.address = "Address is required";
     }
 
     if (!country) {
@@ -128,13 +144,15 @@ export default function AddUsers() {
         phone_number: phoneNumber,
         email,
         role,
-        company,
+        org_name,
+        registration_number,
+        address,
         password,
         status,
       };
 
       const response = await postData(formData);
-      
+
       if (response?.data) {
         // Handle successful user creation
         navigate("/user-list"); // Redirect to users list or appropriate page
@@ -161,150 +179,175 @@ export default function AddUsers() {
       <PageBreadcrumb pageTitle="Add User" />
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="col-6 space-y-6">
-            <div>
-              <Label htmlFor="role">Role *</Label>
-              <Select
-                options={roleOptions}
-                placeholder="Select Role"
-                onChange={(value) => setRole(value)}
-                className="dark:bg-dark-900"
-              />
-              {errors.role && (
-                <p className="mt-1 text-sm text-red-500">{errors.role}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="firstName">First Name *</Label>
-              <Input
-                type="text"
-                id="firstName"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-              />
-              {errors.firstName && (
-                <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
-              )}
-            </div>
-
-            <div>
-              <PhoneInput
-                value={phoneNumber}
-                onChange={(value) => setPhoneNumber(value)}
-                required
-                error={!!errors.phoneNumber}
-                hint={errors.phoneNumber}
-                placeholder="Enter phone number"
-              />
-            </div>
-
-            <div>
-              <CountrySelect
-                value={country}
-                onChange={(value) => {
-                  setCountry(value);
-                  setState(""); // Reset state when country changes
-                  setCity(""); // Reset city when country changes
-                }}
-                required
-                error={errors.country}
-              />
-            </div>
-
-            {state && (
-              <div>
-                <CitySelect
-                  value={city}
-                  onChange={setCity}
-                  country={country}
-                  state={state}
-                  required
-                  error={errors.city}
-                />
-              </div>
+          <div>
+            <Label htmlFor="role">Role *</Label>
+            <Select
+              options={roleOptions}
+              placeholder="Select Role"
+              onChange={(value) => {
+                const selectedRole = roles.find((r: any) => r.id === value);
+                setRole(value);
+                setRoleLevel(selectedRole?.rolelevel || null);
+              }}
+              className="dark:bg-dark-900"
+            />
+            {errors.role && (
+              <p className="mt-1 text-sm text-red-500">{errors.role}</p>
             )}
-
-            <div>
-              <Label htmlFor="password">Password</Label>
-              <Input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="col-6 space-y-6">
-            <div>
-              <Label htmlFor="email">Email *</Label>
-              <Input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                type="text"
-                id="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="status">Status *</Label>
-              <Select
-                options={statusOptions}
-                placeholder="Select Status"
-                onChange={(value) => setStatus(value)}
-                className="dark:bg-dark-900"
-              />
-              {errors.status && (
-                <p className="mt-1 text-sm text-red-500">{errors.status}</p>
-              )}
-            </div>
-            {country && (
+          </div>{" "}
+          {roleLevel === 100 && (
+            <>
               <div>
-                <StateSelect
-                  value={state}
-                  onChange={(value) => {
-                    setState(value);
-                    setCity(""); // Reset city when state changes
-                  }}
-                  country={country}
-                  required
-                  error={errors.state}
-                />
-              </div>
-            )}
-            <div>
-              <Label htmlFor="postalCode">Postal Code</Label>
-              <Input
-                type="text"
-                id="postalCode"
-                value={postalCode}
-                onChange={(e) => setPostalCode(e.target.value)}
-              />
-            </div>
-            {role === "company" && (
-              <div>
-                <Label htmlFor="company">Company *</Label>
+                <Label htmlFor="org_name">Organisation Name *</Label>
                 <Input
                   type="text"
-                  id="company"
-                  value={company}
-                  onChange={(e) => setCompany(e.target.value)}
+                  id="org_name"
+                  value={org_name}
+                  onChange={(e) => setOrgName(e.target.value)}
                 />
-                {errors.company && (
-                  <p className="mt-1 text-sm text-red-500">{errors.company}</p>
+                {errors.org_name && (
+                  <p className="mt-1 text-sm text-red-500">{errors.org_name}</p>
                 )}
               </div>
+              <div>
+                <Label htmlFor="registration_number">
+                  Registration Number *
+                </Label>
+                <Input
+                  type="text"
+                  id="registration_number"
+                  value={registration_number}
+                  onChange={(e) => setRegistrationNumber(e.target.value)}
+                />
+                {errors.registration_number && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.registration_number}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+          <div>
+            <Label htmlFor="email">Email *</Label>
+            <Input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
             )}
+          </div>
+          <div>
+            <Label htmlFor="firstName">First Name *</Label>
+            <Input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            {errors.firstName && (
+              <p className="mt-1 text-sm text-red-500">{errors.firstName}</p>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+          <div>
+            <PhoneInput
+              value={phoneNumber}
+              onChange={(value) => setPhoneNumber(value)}
+              required
+              error={!!errors.phoneNumber}
+              hint={errors.phoneNumber}
+              placeholder="Enter phone number"
+            />
+          </div>
+          <div>
+            <CountrySelect
+              value={country}
+              onChange={(value) => {
+                setCountry(value);
+                setState(""); // Reset state when country changes
+                setCity(""); // Reset city when country changes
+              }}
+              required
+              error={errors.country}
+            />
+          </div>
+          {country && (
+            <div>
+              <StateSelect
+                value={state}
+                onChange={(value) => {
+                  setState(value);
+                  setCity(""); // Reset city when state changes
+                }}
+                country={country}
+                required
+                error={errors.state}
+              />
+            </div>
+          )}
+          {state && (
+            <div>
+              <CitySelect
+                value={city}
+                onChange={setCity}
+                country={country}
+                state={state}
+                required
+                error={errors.city}
+              />
+            </div>
+          )}{" "}
+          {roleLevel === 100 && (
+            <div>
+              <Label htmlFor="address">Address</Label>
+              <Input
+                type="text"
+                id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+            </div>
+          )}
+          <div>
+            <Label htmlFor="postalCode">Postal Code</Label>
+            <Input
+              type="text"
+              id="postalCode"
+              value={postalCode}
+              onChange={(e) => setPostalCode(e.target.value)}
+            />
+          </div>
+          <div>
+            <Label htmlFor="status">Status *</Label>
+            <Select
+              options={statusOptions}
+              placeholder="Select Status"
+              onChange={(value) => setStatus(value)}
+              className="dark:bg-dark-900"
+            />
+            {errors.status && (
+              <p className="mt-1 text-sm text-red-500">{errors.status}</p>
+            )}
+          </div>
+          <div>
+            <Label htmlFor="password">Password</Label>
+            <Input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
         </div>
         <button

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
-import BasicTableOne, { Column } from "../../components/tables/BasicTables/BasicTableOne";
+import BasicTableOne, {
+  Column,
+} from "../../components/tables/BasicTables/BasicTableOne";
 import { useNavigate } from "react-router-dom";
 import useGetData from "../../hooks/useGetData";
 import Badge from "../../components/ui/badge/Badge";
@@ -26,45 +28,61 @@ interface ApiUser {
 interface UserResponse {
   status: string;
   message: string;
-  data: ApiUser[];
+  data: {
+    users: ApiUser[];
+    totalCount: number;
+    page: number;
+    limit: number;
+  };
 }
 
 export default function UserList() {
   const navigate = useNavigate();
   const [users, setUsers] = useState<ApiUser[]>([]);
   const [loading, setLoading] = useState(true);
-  
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(10);
+
   // State for filters
   const [filters, setFilters] = useState({
     search: "",
     sort: "a-z",
-    role: "all"
+    role: "all",
   });
 
   const { getData } = useGetData<UserResponse>();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getData("/v1/admin/list-user");
-        if (response?.data) {
-          setUsers(response.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch users:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const queryParams = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: limit.toString(),
+        ...(filters.search && { name: filters.search }),
+      });
 
+      const response = await getData(`/v1/admin/list-user?${queryParams}`);
+      if (response?.data) {
+        setUsers(response.data.users);
+        setTotalCount(response.data.totalCount);
+      }
+    } catch (err) {
+      console.error("Failed to fetch users:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [currentPage, filters.search]);
 
   // Define table columns
   const columns: Column[] = [
     {
-      key: 'name',
-      header: 'User',
+      key: "name",
+      header: "User",
       render: (_, row) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 overflow-hidden rounded-full">
@@ -72,33 +90,39 @@ export default function UserList() {
               width={40}
               height={40}
               src="/images/user/default-avatar.jpg"
-              alt={`${row.first_name || ''} ${row.last_name || ''}`}
+              alt={`${row.first_name || ""} ${row.last_name || ""}`}
               className="w-full h-full object-cover"
             />
           </div>
           <div>
             <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-              {`${row.first_name || ''} ${row.last_name || ''}`.trim() || 'N/A'}
+              {`${row.first_name || ""} ${row.last_name || ""}`.trim() || "N/A"}
             </span>
             <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-              {row.role}
+              {typeof row.role === 'object' ? row.role.rolename : row.role}
             </span>
           </div>
         </div>
       ),
-      className: 'px-5 py-4 sm:px-6'
+      className: "px-5 py-4 sm:px-6",
     },
     {
-      key: 'email',
-      header: 'Email'
+      key: "email",
+      header: "Email",
     },
     {
-      key: 'role',
-      header: 'Role'
+      key: "role",
+      header: "Role",
+      render: (value) => {
+        if (typeof value === 'object' && value !== null) {
+          return value.rolename || "N/A";
+        }
+        return value || "N/A";
+      }
     },
     {
-      key: 'status',
-      header: 'Status',
+      key: "status",
+      header: "Status",
       render: (value) => (
         <Badge
           size="sm"
@@ -112,36 +136,37 @@ export default function UserList() {
         >
           {value}
         </Badge>
-      )
+      ),
     },
     {
-      key: 'createdAt',
-      header: 'Created At',
-      render: () => new Date().toLocaleDateString() // Since API doesn't provide createdAt
-    }
+      key: "createdAt",
+      header: "Created At",
+      render: () => new Date().toLocaleDateString(),
+    },
   ];
-  
+
   // Handler for search input
   const handleSearch = (value: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      search: value
+      search: value,
     }));
+    setCurrentPage(1); // Reset to first page on new search
   };
 
   // Handler for sort dropdown
   const handleSortChange = (value: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      sort: value
+      sort: value,
     }));
   };
 
   // Handler for role filter
   const handleRoleFilterChange = (value: string) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      role: value
+      role: value,
     }));
   };
 
@@ -157,31 +182,17 @@ export default function UserList() {
 
   // Handler for delete user
   const handleDelete = (user: ApiUser) => {
-    // After successful delete, update the users list
-    setUsers(users.filter(u => u.id !== user.id));
+    setUsers(users?.filter((u) => u.id !== user.id) || []);
   };
 
-  // Filter users based on search, sort, and role filters
-  const filteredUsers = users.filter(user => {
-    const fullName = `${user.first_name || ''} ${user.last_name || ''}`.toLowerCase();
-    const matchesSearch = user.email.toLowerCase().includes(filters.search.toLowerCase()) ||
-      fullName.includes(filters.search.toLowerCase());
-    
-    const matchesRole = filters.role === "all" || user.role === filters.role;
-    
-    return matchesSearch && matchesRole;
-  });
+  // Calculate total pages
+  const totalPages = Math.ceil(totalCount / limit);
 
-  // Sort users based on sort filter
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (filters.sort === "a-z") {
-      return a.email.localeCompare(b.email);
-    } else if (filters.sort === "z-a") {
-      return b.email.localeCompare(a.email);
-    }
-    return 0;
-  });
-  
+  // Handler for page change
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <>
       <PageMeta
@@ -201,8 +212,8 @@ export default function UserList() {
           onRoleFilterChange={handleRoleFilterChange}
           onAddNew={handleAddNew}
         >
-          <BasicTableOne 
-            data={sortedUsers}
+          <BasicTableOne
+            data={users}
             columns={columns}
             isLoading={loading}
             emptyMessage="No users found"
@@ -210,7 +221,14 @@ export default function UserList() {
               showEdit: true,
               showDelete: true,
               onEdit: handleEdit,
-              onDelete: handleDelete
+              onDelete: handleDelete,
+            }}
+            pagination={{
+              currentPage,
+              totalPages,
+              onPageChange: handlePageChange,
+              totalItems: totalCount,
+              itemsPerPage: limit,
             }}
           />
         </ComponentCard>

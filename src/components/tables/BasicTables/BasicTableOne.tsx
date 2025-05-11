@@ -27,12 +27,21 @@ export interface ActionColumn {
   showDelete?: boolean;
 }
 
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
 interface BasicTableOneProps {
   data: any[];
   columns: Column[];
   actions?: ActionColumn;
   isLoading?: boolean;
   emptyMessage?: string;
+  pagination?: PaginationProps;
 }
 
 const BasicTableOne: React.FC<BasicTableOneProps> = ({
@@ -40,7 +49,8 @@ const BasicTableOne: React.FC<BasicTableOneProps> = ({
   columns,
   actions,
   isLoading = false,
-  emptyMessage = "No data available"
+  emptyMessage = "No data available",
+  pagination
 }) => {
   const [selectedRow, setSelectedRow] = useState<any>(null);
   const { isOpen, openModal, closeModal } = useModal();
@@ -65,7 +75,7 @@ const BasicTableOne: React.FC<BasicTableOneProps> = ({
     );
   }
 
-  if (!data.length) {
+  if (!data?.length) {
     return (
       <div className="flex items-center justify-center p-8 text-gray-500">
         {emptyMessage}
@@ -102,8 +112,8 @@ const BasicTableOne: React.FC<BasicTableOneProps> = ({
             </TableHeader>
 
             {/* Table Body */}
-            <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {data.map((row, index) => (
+            <TableBody>
+              {data?.map((row, index) => (
                 <TableRow key={row.id || index}>
                   {columns.map((column) => (
                     <TableCell 
@@ -146,6 +156,43 @@ const BasicTableOne: React.FC<BasicTableOneProps> = ({
           </Table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {pagination && (
+        <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 dark:bg-white/[0.03] dark:border-white/[0.05]">
+          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <span>Showing</span>
+            <span className="font-medium">
+              {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}
+            </span>
+            <span>to</span>
+            <span className="font-medium">
+              {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}
+            </span>
+            <span>of</span>
+            <span className="font-medium">{pagination.totalItems}</span>
+            <span>results</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
+              disabled={pagination.currentPage === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
+              disabled={pagination.currentPage === pagination.totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
