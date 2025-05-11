@@ -59,6 +59,12 @@ export default function CountrySelect({
     label: `${country.name} (${country.code})`
   }));
 
+  // Find the matching country option for the current value
+  const selectedCountry = countryOptions.find(option => 
+    option.value.toLowerCase() === value.toLowerCase() || 
+    option.label.toLowerCase().includes(value.toLowerCase())
+  );
+
   return (
     <div>
       <Label htmlFor="country">
@@ -69,7 +75,7 @@ export default function CountrySelect({
         options={countryOptions}
         placeholder={loading ? "Loading countries..." : "Select a country"}
         onChange={onChange}
-        defaultValue={value}
+        value={selectedCountry?.value || value}
         className="dark:bg-dark-900"
       />
       {(error || errorMessage) && (

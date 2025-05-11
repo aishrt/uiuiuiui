@@ -7,7 +7,18 @@ import BasicTableOne, {
 } from "../../components/tables/BasicTables/BasicTableOne";
 import { useNavigate } from "react-router-dom";
 import useGetData from "../../hooks/useGetData";
+import useDeleteData from "../../hooks/useDeleteData";
+import { toast } from "react-toastify";
 import Badge from "../../components/ui/badge/Badge";
+import { api } from "../../utils/api";
+import storage from "../../utils/storage";
+import { useAuthStore } from "../../store/authStore";
+
+interface Role {
+  id: string;
+  rolename: string;
+  rolelevel: number;
+}
 
 interface ApiUser {
   id: string;
@@ -18,7 +29,7 @@ interface ApiUser {
   country: string;
   state: string;
   city: string;
-  role: string;
+  role: string | Role;
   status: string;
   created_by?: string;
   isDeleted: boolean;
@@ -43,6 +54,8 @@ export default function UserList() {
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit] = useState(10);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const roles = useAuthStore((state: any) => state.roles);
 
   // State for filters
   const [filters, setFilters] = useState({
@@ -181,8 +194,36 @@ export default function UserList() {
   };
 
   // Handler for delete user
-  const handleDelete = (user: ApiUser) => {
-    setUsers(users?.filter((u) => u.id !== user.id) || []);
+  const handleDelete = async (user: ApiUser) => {
+    try {
+      setDeleteLoading(true);
+      // Find the selected role object to get its ID
+      const selectedRole = roles.find((r: Role) => r.id === (typeof user.role === 'string' ? user.role : user.role.id));
+      if (!selectedRole) {
+        toast.error("Invalid role selected");
+        return;
+      }
+
+      const response = await api.delete(`/v1/admin/delete-user/${user.id}`, {
+        headers: {
+          Authorization: `Bearer ${storage.getToken()}`,
+        },
+        data: {
+          role: selectedRole.id
+        }
+      });
+
+      if (response?.data) {
+        toast.success("User deleted successfully!");
+        // Refresh the user list
+        fetchUsers();
+      }
+    } catch (err) {
+      console.error("Failed to delete user:", err);
+      toast.error("Failed to delete user. Please try again.");
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   // Calculate total pages

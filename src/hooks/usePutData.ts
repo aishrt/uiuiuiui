@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { api } from '../utils/api';
 import { env } from '../utils/env';
+import storage from '../utils/storage';
 
 interface FetchOptions {
   verifyAuth?: boolean;
@@ -24,7 +25,7 @@ const usePutData = <T, R>(endpoint: string, options?: FetchOptions) => {
         if (options?.verifyAuth) {
           headers = {
             ...headers,
-            Authorization: `Bearer your_token_here`,
+            Authorization: `Bearer ${storage.getToken()}`,
           };
         }
 
@@ -33,14 +34,16 @@ const usePutData = <T, R>(endpoint: string, options?: FetchOptions) => {
         setError(null);
 
         if (env.enableLogging) {
-          toast.success('Data updated successfully!');
+          toast.success(response?.data?.message || 'Data updated successfully!');
         }
         return response.data;
       } catch (err: any) {
+        console.error("Error updating data:", err);
         setError(err.response?.data?.message || err.message);
         if (env.enableLogging) {
-          toast.error('Failed to update data');
+          toast.error(err.response?.data?.message || 'Failed to update data');
         }
+        throw err;
       } finally {
         setLoading(false);
       }
