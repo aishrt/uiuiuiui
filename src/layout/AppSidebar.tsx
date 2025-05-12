@@ -76,7 +76,7 @@ const navItems: NavItem[] = [
     icon: <GroupIcon />,
     name: "User List",
     path: "/user-list",
-    allowedRoles: [ROLES.superadmin, ROLES.admin],
+    allowedRoles: [ROLES.superadmin, ROLES.admin , ROLES.organisation],
   },
   {
     icon: <BoxIconLine />,
@@ -107,6 +107,17 @@ const navItems: NavItem[] = [
     path: "/transactions-list",
     allowedRoles: [ROLES.superadmin],
   },
+
+
+  //----------------- Org Bars -------------------
+
+  {
+    icon: <GroupIcon />,
+    name: "Deals",
+    path: "/organisation-list",
+    allowedRoles: [ROLES.superadmin, ROLES.admin],
+  },
+
   // {
   //   name: "Forms",
   //   icon: <ListIcon />,

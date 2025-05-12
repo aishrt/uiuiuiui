@@ -13,7 +13,7 @@ const NotFound = () => {
     } else if (currentRole === 105) {
       navigate("/user-list");
     } else if (currentRole === 100) {
-      navigate("/organisation-list");
+      navigate("/user-list");
     }
   };
 

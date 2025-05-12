@@ -64,7 +64,6 @@ const RoleGuard: React.FC<RoleGuardProps> = ({
   // TODO: Replace this with your actual auth context/state management
   const userRole = useAuthStore((state: any) => state.currentUserRole); // This should come from your auth system
 
-
   const hasAccess = allowedRoles.some((role) =>
     hasRequiredRole(userRole, role)
   );
@@ -125,7 +124,9 @@ export const protectedRoutes = [
       {
         path: "/user-list",
         element: (
-          <RoleGuard allowedRoles={[ROLES.superadmin , ROLES.admin]}>
+          <RoleGuard
+            allowedRoles={[ROLES.superadmin, ROLES.admin, ROLES.organisation]}
+          >
             <UserList />
           </RoleGuard>
         ),
@@ -133,7 +134,7 @@ export const protectedRoutes = [
       {
         path: "/admin-list",
         element: (
-          <RoleGuard allowedRoles={[ROLES.superadmin ]}>
+          <RoleGuard allowedRoles={[ROLES.superadmin]}>
             <UserList />
           </RoleGuard>
         ),
@@ -141,7 +142,7 @@ export const protectedRoutes = [
       {
         path: "/organisation-list",
         element: (
-          <RoleGuard allowedRoles={[ROLES.admin]}>
+          <RoleGuard allowedRoles={[ROLES.superadmin, ROLES.admin]}>
             <CompanyList />
           </RoleGuard>
         ),
@@ -149,7 +150,9 @@ export const protectedRoutes = [
       {
         path: "/deals-list",
         element: (
-          <RoleGuard allowedRoles={[ROLES.organisation]}>
+          <RoleGuard
+            allowedRoles={[ROLES.superadmin, ROLES.admin, ROLES.organisation]}
+          >
             <DealsList />
           </RoleGuard>
         ),
@@ -157,7 +160,9 @@ export const protectedRoutes = [
       {
         path: "/trucks-list",
         element: (
-          <RoleGuard allowedRoles={[ROLES.trackie]}>
+          <RoleGuard
+            allowedRoles={[ROLES.superadmin, ROLES.admin, ROLES.trackie]}
+          >
             <TrucksList />
           </RoleGuard>
         ),
@@ -165,7 +170,9 @@ export const protectedRoutes = [
       {
         path: "/transactions-list",
         element: (
-          <RoleGuard allowedRoles={[ROLES.runner]}>
+          <RoleGuard
+            allowedRoles={[ROLES.superadmin, ROLES.admin, ROLES.runner]}
+          >
             <TransactionsList />
           </RoleGuard>
         ),
@@ -173,7 +180,9 @@ export const protectedRoutes = [
       {
         path: "/reset-password",
         element: (
-          <RoleGuard allowedRoles={[ROLES.runner]}>
+          <RoleGuard
+            allowedRoles={[ROLES.superadmin, ROLES.admin, ROLES.runner]}
+          >
             <ResetPasswordForm />
           </RoleGuard>
         ),
@@ -181,7 +190,9 @@ export const protectedRoutes = [
       {
         path: "/add-user",
         element: (
-          <RoleGuard allowedRoles={[ROLES.admin]}>
+          <RoleGuard
+            allowedRoles={[ROLES.superadmin, ROLES.admin, ROLES.organisation]}
+          >
             <AddUsers />
           </RoleGuard>
         ),
@@ -189,7 +200,9 @@ export const protectedRoutes = [
       {
         path: "/edit-user/:id",
         element: (
-          <RoleGuard allowedRoles={[ROLES.admin]}>
+          <RoleGuard
+            allowedRoles={[ROLES.superadmin, ROLES.admin, ROLES.organisation]}
+          >
             <AddUsers />
           </RoleGuard>
         ),
@@ -197,7 +210,7 @@ export const protectedRoutes = [
       {
         path: "/edit-company/:id",
         element: (
-          <RoleGuard allowedRoles={[ROLES.superadmin]}>
+          <RoleGuard allowedRoles={[ROLES.superadmin, ROLES.admin]}>
             <AddUsers />
           </RoleGuard>
         ),
