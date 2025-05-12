@@ -42,6 +42,8 @@ export default function AddUsers() {
   const { id } = useParams();
   const { login } = useAuthStore();
   const isEditMode = !!id;
+  const isEditCompany = location.pathname.startsWith("/edit-company/");
+  console.log("isEditCompany", isEditCompany);
   
   // State for form fields
   const [firstName, setFirstName] = useState("");
@@ -78,7 +80,7 @@ export default function AddUsers() {
   const roles = useAuthStore((state: any) => state.roles);
   const roleOptions = [
     ...roles
-      .filter((role: any) => role.rolelevel === 100)
+      // .filter((role: any) => role.rolelevel === 100)
       .map((role: any) => ({
         value: role.id,
         label: role.rolename.toUpperCase(),
@@ -97,7 +99,7 @@ export default function AddUsers() {
       if (isEditMode) {
         setIsLoading(true);
         try {
-          const response = await getData(`/v1/admin/user-detail/${id}`);
+          const response = await getData(`/v1/admin/${isEditCompany ? "organisation-detail" : "user-detail"}/${id}`);
           if (response?.data) {
             const userData = response.data;
             setFirstName(userData.first_name || "");
@@ -245,6 +247,7 @@ export default function AddUsers() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          {!isEditMode && (
             <div>
               <Label htmlFor="role">Role *</Label>
               <Select
@@ -262,10 +265,11 @@ export default function AddUsers() {
               {errors.role && (
                 <p className="mt-1 text-sm text-red-500">{errors.role}</p>
               )}
-            </div>{" "}
-            {roleLevel === 100 && (
-              <>
-                <div>
+            </div>
+          )}
+          {(roleLevel === 100 || isEditCompany) && (
+            <>
+              <div>
                   <Label htmlFor="org_name">Organisation Name *</Label>
                   <Input
                     type="text"

@@ -3,10 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import GridShape from "../../components/common/GridShape";
 import PageMeta from "../../components/common/PageMeta";
 import { ScrollToTop } from "../../components/common/ScrollToTop";
+import { useAuthStore } from '../../store/authStore';
 
 const ErrorPage = () => {
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(5);
+
+  const currentRole = useAuthStore((state: any) => state.currentUserRole);
+  const handleRedirect = () => {
+    if (currentRole === 110) {
+      navigate("/");
+    } else if (currentRole === 105) {
+      navigate("/user-list");
+    } else if (currentRole === 100) {
+      navigate("/organisation-list");
+    }
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -50,12 +62,12 @@ const ErrorPage = () => {
             Something went wrong! Redirecting to home page in {countdown} seconds...
           </p>
 
-          <button
-            onClick={() => navigate('/')}
+          <span
+            onClick={handleRedirect}
             className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
           >
             Back to Home Page
-          </button>
+          </span>
         </div>
         {/* <!-- Footer --> */}
         <p className="absolute text-sm text-center text-gray-500 -translate-x-1/2 bottom-6 left-1/2 dark:text-gray-400">

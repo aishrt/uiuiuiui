@@ -8,31 +8,56 @@ import UserDropdown from "../components/header/UserDropdown";
 import useGetData from "../hooks/useGetData";
 import { useAuthStore } from "../store/authStore";
 
-const AppHeader: React.FC = () => {
+interface ProfileResponse {
+  role: number;
+  // Add other profile fields as needed
+}
 
+const AppHeader: React.FC = () => {
   const { getData, loading, error } = useGetData();
   const roles = useAuthStore((state) => state.roles);
   const updateRoles = useAuthStore((state) => state.updateRoles);
+  const updateUserRole = useAuthStore((state) => state.updateUserRole);
+
+  const [profileData, setProfileData] = useState<ProfileResponse | null>(null);
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response: any = (await getData(
+          `/api/auth/profile`
+        )) as ProfileResponse;
+        if (response) {
+          setProfileData(response);
+          if (response.role) {
+            updateUserRole(response.role?.rolelevel);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching profile data:", err);
+      }
+    };
+
+    if (!profileData) {
+      fetchProfileData();
+    }
+  }, []);
 
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        if (roles.length === 0) {
-          const data: any = await getData("/v1/admin/list-role");
-          if (data) {
-            updateRoles(data?.data);
-          }
+        const data: any = await getData("/v1/admin/list-role");
+        if (data) {
+          updateRoles(data?.data);
         }
       } catch (err) {
         console.error("Error fetching roles:", err);
       }
     };
 
-    if (roles?.length === 0) {
-      fetchRoles();
-    }
-  }, [getData, roles, updateRoles]);
-console.log("roleeeeeee",roles)
+    fetchRoles();
+  }, []);
+
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
@@ -190,7 +215,7 @@ console.log("roleeeeeee",roles)
             {/* <!-- Notification Menu Area --> */}
           </div>
           {/* <!-- User Area --> */}
-          <UserDropdown />
+          <UserDropdown profileData={profileData} />
         </div>
       </div>
     </header>

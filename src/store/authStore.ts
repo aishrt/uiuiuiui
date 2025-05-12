@@ -11,8 +11,10 @@ interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
   roles: string[];
+  currentUserRole: number;
   login: (userData: User) => void;
   updateRoles: (roles: string[]) => void;
+  updateUserRole: (role: number) => void;
   logout: () => void;
 }
 
@@ -22,9 +24,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       user: null,
       roles: [],
+      currentUserRole: 0,
       login: (userData: User) => set({ isAuthenticated: true, user: userData }),
       updateRoles: (roles: string[]) => set({ roles }),
-      logout: () => set({ isAuthenticated: false, user: null, roles: [] }),
+      updateUserRole: (role: number) => set({ currentUserRole: role }),
+      logout: () => set({ isAuthenticated: false, user: null, roles: [], currentUserRole: 0 }),
     }),
     {
       name: 'auth-storage',

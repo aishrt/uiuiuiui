@@ -4,7 +4,7 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 
-export default function UserAddressCard() {
+export default function UserAddressCard({ profileData }: { profileData: any }) {
   // const { isOpen, openModal, closeModal } = useModal();
   // const handleSave = () => {
   //   // Handle save logic here
@@ -26,7 +26,7 @@ export default function UserAddressCard() {
                   Country
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  United States.
+                  {profileData?.country}
                 </p>
               </div>
 
@@ -35,27 +35,21 @@ export default function UserAddressCard() {
                   City/State
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Phoenix, Arizona, United States.
+                  {profileData?.city}, {profileData?.state},{" "}
+                  {profileData?.country}.
                 </p>
               </div>
 
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Postal Code
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  ERT 2489
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  TAX ID
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  AS4568384
-                </p>
-              </div>
+              {profileData?.postal_code && (
+                <div>
+                  <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                    Postal Code
+                  </p>
+                  <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                    {profileData?.postal_code}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

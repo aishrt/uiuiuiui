@@ -11,6 +11,7 @@ const useGetData = <T,>() => {
     setError(null);
     try {
       const token = storage.getToken();
+      console.log(token);
       const response = await api.get(endpoint, {
         headers: {
           'Authorization': `Bearer ${token}`,

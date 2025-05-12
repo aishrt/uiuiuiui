@@ -31,6 +31,7 @@ export default function SignInForm() {
   );
   const login = useAuthStore((state) => state.login);
   const user = useAuthStore((state) => state.user);
+  const updateUserRole = useAuthStore((state) => state.updateUserRole);
 
   const handleSignIn = async () => {
     try {
@@ -38,7 +39,7 @@ export default function SignInForm() {
         email,
         password,
       });
-      console.log("response-----------", response);
+      console.log("response-----------signin", response);
       if (response) {
         const tokenVal = response?.data?.tokens?.access?.token;
         console.log("tokenVal-----------", tokenVal);
@@ -48,8 +49,23 @@ export default function SignInForm() {
           name: response?.data?.user?.name,
           email: response?.data?.user?.email,
         });
+        const currentRole = response?.data?.user?.role?.rolelevel;
+        console.log("currentRole-----------", currentRole);
+        updateUserRole(currentRole);
         console.log("User after login:", user);
         navigate("/");
+
+        if (currentRole === 110) {
+          navigate("/");
+        } else if (currentRole === 105) {
+          navigate("/user-list");
+        } else if (currentRole === 100) {
+          navigate("/organisation-list");
+        } else if (currentRole === 95) {
+          navigate("/trackie-list");
+        } else {
+          navigate("/");
+        }
       }
     } catch (err) {
       console.error("Login failed:", err);

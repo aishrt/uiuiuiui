@@ -21,12 +21,36 @@ import {
   BoltIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import { useAuthStore } from "../store/authStore";
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+  allowedRoles: UserRole[];
+};
+
+// Define role types and constants
+export type UserRole = 110 | 105 | 100 | 95 | 90 | 85 | 80 | 75;
+
+export const ROLES = {
+  superadmin: 110 as UserRole,
+  admin: 105 as UserRole,
+  organisation: 100 as UserRole,
+  bookie: 95 as UserRole,
+  trackie: 90 as UserRole,
+  runner: 85 as UserRole,
+  transporter: 80 as UserRole,
+  clearing_agent: 75 as UserRole,
+} as const;
+
+// Role hierarchy check utility
+const hasRequiredRole = (
+  userRole: UserRole,
+  requiredRole: UserRole
+): boolean => {
+  return userRole >= requiredRole;
 };
 
 const navItems: NavItem[] = [
@@ -34,8 +58,7 @@ const navItems: NavItem[] = [
     icon: <GridIcon />,
     name: "Dashboard",
     path: "/",
-
-    // subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    allowedRoles: [ROLES.superadmin],
   },
   // {
   //   icon: <CalenderIcon />,
@@ -47,31 +70,42 @@ const navItems: NavItem[] = [
     icon: <GroupIcon />,
     name: "Admin List",
     path: "/admin-list",
+    allowedRoles: [ROLES.superadmin],
   },
   {
     icon: <GroupIcon />,
     name: "User List",
     path: "/user-list",
+    allowedRoles: [ROLES.superadmin, ROLES.admin],
   },
   {
     icon: <BoxIconLine />,
-    name: "Companies",
-    path: "/companies-list",
+    name: "Organisation List",
+    path: "/organisation-list",
+    allowedRoles: [ROLES.superadmin, ROLES.admin],
   },
   {
     icon: <FileIcon />,
     name: "Deals",
     path: "/deals-list",
+    allowedRoles: [ROLES.superadmin, ROLES.admin, ROLES.organisation],
   },
   {
     icon: <BoltIcon />,
     name: "Trucks",
     path: "/trucks-list",
+    allowedRoles: [
+      ROLES.superadmin,
+      ROLES.admin,
+      ROLES.organisation,
+      ROLES.trackie,
+    ],
   },
   {
     icon: <DollarLineIcon />,
     name: "Transactions",
     path: "/transactions-list",
+    allowedRoles: [ROLES.superadmin],
   },
   // {
   //   name: "Forms",
@@ -128,6 +162,14 @@ const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
 
+  // TODO: Replace this with your actual auth context/state management
+  const userRole = useAuthStore((state: any) => state.currentUserRole); // This should come from your auth system
+
+  // Filter navItems based on user role
+  const filteredNavItems = navItems.filter((item) => {
+    return item.allowedRoles.some((role) => hasRequiredRole(userRole, role));
+  });
+
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
     index: number;
@@ -146,8 +188,7 @@ const AppSidebar: React.FC = () => {
   useEffect(() => {
     let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
-      // const items = menuType === "main" ? navItems : othersItems;
-      navItems.forEach((nav, index) => {
+      filteredNavItems.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
             if (isActive(subItem.path)) {
@@ -165,7 +206,7 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
-  }, [location, isActive]);
+  }, [location, isActive, filteredNavItems]);
 
   useEffect(() => {
     if (openSubmenu !== null) {
@@ -378,7 +419,7 @@ const AppSidebar: React.FC = () => {
                   <HorizontaLDots className="size-6" />
                 )}
               </h2>
-              {renderMenuItems(navItems, "main")}
+              {renderMenuItems(filteredNavItems, "main")}
             </div>
             {/* <div className="">
               <h2

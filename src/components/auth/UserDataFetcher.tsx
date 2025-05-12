@@ -18,7 +18,7 @@ const UserDataFetcher = () => {
 
   useEffect(() => {
     // const fetchUserData = async () => {
-    //   const data = await getData('/api/auth/me');
+    //   const data = await getData('/api/auth/profile');
     //   if (data && data.role) {
     //     updateRoles([data.role.name]);
     //   }

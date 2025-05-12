@@ -36,6 +36,7 @@ const usePutData = <T, R>(endpoint: string, options?: FetchOptions) => {
         if (env.enableLogging) {
           toast.success(response?.data?.message || 'Data updated successfully!');
         }
+        toast.success(response?.data?.message || 'Data updated successfully!');
         return response.data;
       } catch (err: any) {
         console.error("Error updating data:", err);

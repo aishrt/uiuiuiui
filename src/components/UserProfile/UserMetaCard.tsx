@@ -3,14 +3,64 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import PhoneInput from "../form/input/PhoneInput";
+import CountrySelect from "../form/input/CountrySelect";
+import StateSelect from "../form/input/StateSelect";
+import CitySelect from "../form/input/CitySelect";
+import Select from "../form/Select";
+import { useState } from "react";
+import FileInput from "../form/input/FileInput";
+import usePutData from "../../hooks/usePutData";
 
-export default function UserMetaCard() {
+interface UserMetaCardProps {
+  profileData: any;
+}
+
+export default function UserMetaCard({ profileData }: UserMetaCardProps) {
   const { isOpen, openModal, closeModal } = useModal();
 
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  console.log("profileData", profileData);
+  const { putData, loading } = usePutData(
+    `/api/user/update-profile/${profileData?.id}`,
+    { verifyAuth: true }
+  );
+
+  const [file, setFile] = useState<any>();
+
+  const handleFileChange = (file: File | null, fileDataURL: string) => {
+    setFile(file);
+  };
+  const [formData, setFormData] = useState({
+    first_name: profileData?.first_name || "",
+    last_name: profileData?.last_name || "",
+    email: profileData?.email || "",
+    phone_number: profileData?.phone_number?.toString() || "",
+    country: profileData?.country || "",
+    state: profileData?.state || "",
+    city: profileData?.city || "",
+    status: profileData?.status || "active",
+  });
+
+  const statusOptions = [
+    { value: "active", label: "Active" },
+    { value: "inactive", label: "Inactive" },
+    { value: "suspended", label: "Suspended" },
+  ];
+
+  const handleInputChange = (field: string, value: string | undefined) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value || "",
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      await putData(formData);
+      closeModal();
+    } catch (err) {
+      console.error("Error saving changes:", err);
+    }
   };
 
   return (
@@ -18,25 +68,34 @@ export default function UserMetaCard() {
       <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-            <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800">
-              <img src="/images/user/owner.jpg" alt="user" />
-            </div>
+            {/* <div className="w-20 h-20 overflow-hidden border border-gray-200 rounded-full dark:border-gray-800"> */}
+            {/* <img src="/images/user/owner.jpg" alt="user" /> */}
+            <FileInput onFileChange={handleFileChange} />
+            {/* </div> */}
             <div className="order-3 xl:order-2">
               <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
-                kalkogic
+                {profileData?.first_name} {profileData?.last_name}
               </h4>
               <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Team Manager
+                  {(profileData?.role?.rolename)?.toUpperCase()}
                 </p>
-                <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Maputo, Mozambique
-                </p>
-                <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  ERT 2489
-                </p>
+                {profileData?.phone_number && (
+                  <>
+                    <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {profileData?.phone_number}
+                    </p>
+                  </>
+                )}
+                {profileData?.status && (
+                  <>
+                    <div className="hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block"></div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {(profileData?.status)?.toUpperCase()}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -76,42 +135,77 @@ export default function UserMetaCard() {
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
                     <Label>First Name</Label>
-                    <Input type="text" value="Neeraj " />
+                    <Input
+                      type="text"
+                      value={formData.first_name}
+                      onChange={(e) =>
+                        handleInputChange("first_name", e.target.value)
+                      }
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
+                    <Input
+                      type="text"
+                      value={formData.last_name}
+                      onChange={(e) =>
+                        handleInputChange("last_name", e.target.value)
+                      }
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@Kalkogic.com" />
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
+                    <PhoneInput
+                      value={formData.phone_number || ""}
+                      onChange={(value) =>
+                        handleInputChange("phone_number", value)
+                      }
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Country</Label>
-                    <Input type="text" value="United States" />
+                    <CountrySelect
+                      value={formData.country}
+                      onChange={(value) => handleInputChange("country", value)}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>City/State</Label>
-                    <Input type="text" value="Phoenix, Arizona" />
+                    <StateSelect
+                      country={formData.country}
+                      value={formData.state}
+                      onChange={(value) => handleInputChange("state", value)}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Postal Code</Label>
-                    <Input type="text" value="ERT 2489" />
+                    <CitySelect
+                      country={formData.country}
+                      state={formData.state}
+                      value={formData.city}
+                      onChange={(value) => handleInputChange("city", value)}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>TAX ID</Label>
-                    <Input type="text" value="AS4568384" />
+                    <Label>Status</Label>
+                    <Select
+                      options={statusOptions}
+                      value={formData.status}
+                      onChange={(value) => handleInputChange("status", value)}
+                    />
                   </div>
                 </div>
               </div>
@@ -121,7 +215,7 @@ export default function UserMetaCard() {
                 Close
               </Button>
               <Button size="sm" onClick={handleSave}>
-                Save Changes
+                {loading ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </form>

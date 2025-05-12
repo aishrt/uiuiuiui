@@ -58,7 +58,7 @@ export default function UserList() {
   const [limit] = useState(10);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const roles = useAuthStore((state: any) => state.roles);
-
+  console.log("roles------------>", roles);
   // State for filters
   const [filters, setFilters] = useState({
     search: "",

@@ -1,14 +1,35 @@
 import { useState } from "react";
-import { Link } from "react-router";
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
+import { Link, useNavigate } from "react-router-dom";
+import { ChevronLeftIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import Checkbox from "../form/input/Checkbox";
 import Button from "../ui/button/Button";
+import usePostData from "../../hooks/usePostData";
+import { toast } from "react-toastify";
 
-export default function SignInForm() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [isChecked, setIsChecked] = useState(false);
+export default function ForgotPasswordForm() {
+  const [email, setEmail] = useState("");
+  const { postData, loading } = usePostData("/api/auth/forgot-password");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      const response = await postData({
+        email
+      });
+      console.log("responsessssssssssssssssssssssss", response);
+      if (response?.status == 200) {
+        navigate(`/update-password/${response?.token}`);
+      } else {
+        // toast.error(response?.data?.message || "Failed to send reset link");
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to send reset link");
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1">
       <div className="w-full max-w-md pt-10 mx-auto">
@@ -32,18 +53,27 @@ export default function SignInForm() {
             </p>
           </div>
           <div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div>
                   <Label>
                     Email <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="info@gmail.com" />
+                  <Input 
+                    placeholder="info@gmail.com" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                  />
                 </div>
 
                 <div>
-                  <Button className="w-full" size="sm">
-                    Send Reset Link{" "}
+                  <Button 
+                    className="w-full" 
+                    size="sm"
+                    disabled={loading}
+                  >
+                    {loading ? "Sending..." : "Send Reset Link"}
                   </Button>
                 </div>
               </div>

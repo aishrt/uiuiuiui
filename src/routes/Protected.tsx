@@ -20,21 +20,69 @@ import Alerts from "../pages/UiElements/Alerts";
 import BasicTables from "../pages/Tables/BasicTables";
 import UserList from "../pages/AdminPages/UserList";
 import AddUsers from "../pages/AdminPages/AddUsers";
-import CompaniesList from "../pages/AdminPages/Companies";
 import DealsList from "../pages/AdminPages/DealsList";
 import TrucksList from "../pages/AdminPages/TrucksList";
 import TransactionsList from "../pages/AdminPages/TransactionsList";
-// import { useAuthStore } from "../store/authStore";
+import CompanyList from "../pages/AdminPages/CompanyList";
+import { useAuthStore } from "../store/authStore";
+import ResetPasswordForm from "../components/auth/ResetPasswordForm";
+
+// Define role types and constants
+export type UserRole = 110 | 105 | 100 | 95 | 90 | 85 | 80 | 75;
+
+export const ROLES = {
+  superadmin: 110 as UserRole,
+  admin: 105 as UserRole,
+  organisation: 100 as UserRole,
+  bookie: 95 as UserRole,
+  trackie: 90 as UserRole,
+  runner: 85 as UserRole,
+  transporter: 80 as UserRole,
+  clearing_agent: 75 as UserRole,
+} as const;
+
+// Role hierarchy check utility
+const hasRequiredRole = (
+  userRole: UserRole,
+  requiredRole: UserRole
+): boolean => {
+  return userRole >= requiredRole;
+};
+
+// Role Guard Component
+interface RoleGuardProps {
+  children: React.ReactNode;
+  allowedRoles: UserRole[];
+  fallbackPath?: string;
+}
+
+const RoleGuard: React.FC<RoleGuardProps> = ({
+  children,
+  allowedRoles,
+  fallbackPath = "/not-found",
+}) => {
+  // TODO: Replace this with your actual auth context/state management
+  const userRole = useAuthStore((state: any) => state.currentUserRole); // This should come from your auth system
+
+
+  const hasAccess = allowedRoles.some((role) =>
+    hasRequiredRole(userRole, role)
+  );
+
+  if (!hasAccess) {
+    return <Navigate to={fallbackPath} replace />;
+  }
+
+  return <>{children}</>;
+};
 
 const ProtectedLayout = () => {
-  // const { isAuthenticated } = useAuthStore();
-
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/signin" replace />;
-  // }
-
   return (
-    <Suspense fallback={<div className="w-screen h-screen alignmentLogo">Any Image Here</div>}>
+    <Suspense
+      fallback={
+        <div className="w-screen h-screen alignmentLogo">Any Image Here</div>
+      }
+    >
       <ScrollToTop />
       <AppLayout />
     </Suspense>
@@ -43,7 +91,11 @@ const ProtectedLayout = () => {
 
 const ErrorLayout = () => {
   return (
-    <Suspense fallback={<div className="w-screen h-screen alignmentLogo">Any Image Here</div>}>
+    <Suspense
+      fallback={
+        <div className="w-screen h-screen alignmentLogo">Any Image Here</div>
+      }
+    >
       <Outlet />
     </Suspense>
   );
@@ -54,29 +106,118 @@ export const protectedRoutes = [
     path: "/",
     element: <ProtectedLayout />,
     children: [
-      { path: "/", element: <Home /> },
-      { path: "/profile", element: <UserProfiles /> },
-      { path: "/user-list", element: <UserList /> },
-      { path: "/admin-list", element: <UserList /> },
-      { path: "/companies-list", element: <CompaniesList /> },
-      { path: "/deals-list", element: <DealsList /> },
-      { path: "/trucks-list", element: <TrucksList /> },
-      { path: "/transactions-list", element: <TransactionsList /> },
-      { path: "/add-user", element: <AddUsers /> },
-      { path: "/edit-user/:id", element: <AddUsers /> },
-      // =======================================
-      { path: "/calendar", element: <Calendar /> },
-      { path: "/blank", element: <Blank /> },
-      { path: "/form-elements", element: <FormElements /> },
-      { path: "/basic-tables", element: <BasicTables /> },
-      { path: "/alerts", element: <Alerts /> },
-      { path: "/avatars", element: <Avatars /> },
-      { path: "/badge", element: <Badges /> },
-      { path: "/buttons", element: <Buttons /> },
-      { path: "/images", element: <Images /> },
-      { path: "/videos", element: <Videos /> },
-      { path: "/line-chart", element: <LineChart /> },
-      { path: "/bar-chart", element: <BarChart /> },
+      {
+        path: "/",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.superadmin, ROLES.admin]}>
+            <Home />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.superadmin]}>
+            <UserProfiles />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/user-list",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.superadmin , ROLES.admin]}>
+            <UserList />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/admin-list",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.superadmin ]}>
+            <UserList />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/organisation-list",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.admin]}>
+            <CompanyList />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/deals-list",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.organisation]}>
+            <DealsList />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/trucks-list",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.trackie]}>
+            <TrucksList />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/transactions-list",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.runner]}>
+            <TransactionsList />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/reset-password",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.runner]}>
+            <ResetPasswordForm />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/add-user",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.admin]}>
+            <AddUsers />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/edit-user/:id",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.admin]}>
+            <AddUsers />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/edit-company/:id",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.superadmin]}>
+            <AddUsers />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/calendar",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.superadmin]}>
+            <Calendar />
+          </RoleGuard>
+        ),
+      },
+      {
+        path: "/blank",
+        element: (
+          <RoleGuard allowedRoles={[ROLES.superadmin]}>
+            <Blank />
+          </RoleGuard>
+        ),
+      },
     ],
   },
   {
